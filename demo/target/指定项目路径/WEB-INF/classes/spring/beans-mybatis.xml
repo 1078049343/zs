@@ -1,0 +1,33 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+    <!-- spring和MyBatis完美整合 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--必须配置数据源-->
+        <property name="dataSource" ref="dataSource"/>
+
+        <!-- 自动扫描mapping.xml文件 -->
+        <!--<property name="mapperLocations" value="classpath:mappers/*.xml"/>-->
+        <property name="mapperLocations" value="classpath:mappers/**/*.xml"/>
+
+        <!--给包下实体自动注册别名-->
+        <property name="typeAliasesPackage" value="cn.yulezhisi"/>
+
+        <!--如果mybatis-config.xml没有特殊配置也可以不需要下面的配置  延时加载等setting属性只能使用配置文件-->
+        <property name="configLocation" value="classpath:mybatis/mybatis-config.xml"/>
+
+    </bean>
+
+    <!--通用mapper的配置 必须还配置在前面-->
+    <bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="cn.yulezhisi.**.dao"/>
+    </bean>
+
+
+    <!--mapper扫描器  DAO接口所在包名，Spring会自动查找其下的接口 不配置就必须接口和配置文件在同一包下-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="basePackage" value="cn.yulezhisi.**.dao"/>
+    </bean>
+
+</beans>

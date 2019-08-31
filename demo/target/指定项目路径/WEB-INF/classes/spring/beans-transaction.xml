@@ -1,0 +1,40 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--声明事务
+        1. 配置事务管理器
+    -->
+
+    <!-- (事务管理)transaction manager -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--2, 配置事务通知-->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="add*" read-only="false" propagation="REQUIRED"/>
+            <tx:method name="insert*" read-only="false" propagation="REQUIRED"/>
+            <tx:method name="del*" read-only="false" propagation="REQUIRED"/>
+            <tx:method name="upd*" read-only="false" propagation="REQUIRED"/>
+            <tx:method name="*" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--3.配置 aop-->
+    <aop:config proxy-target-class="true">
+        <!--配置切入点表达式-->
+        <aop:pointcut id="beanNames" expression="execution(*  *..yulezhisi..service.impl.*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="beanNames"/>
+    </aop:config>
+
+    <!--4.增加注解事务,灵活配置事务
+        @Transactional(默认开启),可以配置在类,方法上
+        @Transactional(readOnly=true)  当类开启事务时,针对某些方法改为只读
+    -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+</beans>
